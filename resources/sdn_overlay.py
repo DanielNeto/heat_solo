@@ -28,11 +28,11 @@ from solo_clientv2 import SoloClient, JsonVNet
 
 class SDNOverlay(resource.Resource):
 
-	support_status = support.SupportStatus(
+    support_status = support.SupportStatus(
         status=support.UNSUPPORTED,
         message=_('This resource is not supported, use at your own risk.'))
 
-	PROPERTIES = (
+    PROPERTIES = (
         REST_ADDRESS, REST_USER, REST_PASSWORD, NETWORK_NAME, 
         SWITCHES, PORTS, LINKS, HOSTS
     ) = (
@@ -68,8 +68,8 @@ class SDNOverlay(resource.Resource):
         'vlan', 'DATAPLANE_IP', 'dataplane_subnet', 'dataplane_gateway'
     )
 
-	properties_schema = {
-    	REST_ADDRESS: properties.Schema(
+    properties_schema = {
+        REST_ADDRESS: properties.Schema(
             properties.Schema.STRING,
             _('The REST API IP address and TCP port used to send requests '
               'to the SDNOverlay service.'
@@ -77,55 +77,55 @@ class SDNOverlay(resource.Resource):
         )
     }
 
-	def getClient(self):
-		rest_api = self.properties[self.REST_ADDRESS]
-		user = "karaf"
-		pw = "karaf"
-		return SoloClient(endpoint=rest_api, user=user, password=pw)
+    def getClient(self):
+        rest_api = self.properties[self.REST_ADDRESS]
+        user = "karaf"
+        pw = "karaf"
+        return SoloClient(endpoint=rest_api, user=user, password=pw)
 
-	def handle_create(self):
-		
-		client = self.getClient()
-		
-		vnets = JsonVNet("vnet5")
-		vnets.addVSwitch("1000000000000011", "192.168.1.1", "6633", "OF_13", "whx-rj")
-		vnets.addVSwitch("2000000000000022", "192.168.1.1", "6633", "OF_13", "whx-sp")
-		networkId = client.createVNet(vnets.getJson())
+    def handle_create(self):
+        
+        client = self.getClient()
+        
+        vnets = JsonVNet("vnet5")
+        vnets.addVSwitch("1000000000000011", "192.168.1.1", "6633", "OF_13", "whx-rj")
+        vnets.addVSwitch("2000000000000022", "192.168.1.1", "6633", "OF_13", "whx-sp")
+        networkId = client.createVNet(vnets.getJson())
 
-		if (networkId is False) or (networkId is None):
-			#throw exception
-			return False
+        if (networkId is False) or (networkId is None):
+            #throw exception
+            return False
 
-		self.resource_id_set(networkId)
-		return networkId
+        self.resource_id_set(networkId)
+        return networkId
 
-	def check_create_complete(self, networkId):
+    def check_create_complete(self, networkId):
 
-		client = self.getClient()
-		return client.inspectVNet(networkId)
+        client = self.getClient()
+        return client.inspectVNet(networkId)
 
-	def handle_delete(self):
+    def handle_delete(self):
 
-		if self.resource_id is None:
+        if self.resource_id is None:
             return
 
-		client = self.getClient()
-		ok = client.removeVNet(self.resource_id)
+        client = self.getClient()
+        ok = client.removeVNet(self.resource_id)
 
-		if not ok:
-			#throw error
-			return False
+        if not ok:
+            #throw error
+            return False
 
-		return self.resource_id
+        return self.resource_id
 
-	def check_delete_complete(self, networkId):
+    def check_delete_complete(self, networkId):
 
-		client = self.getClient()
-		return (client.getVNetName() is None)
+        client = self.getClient()
+        return (client.getVNetName() is None)
 
-	def validate(self):
-		##oq?!
-
+    def validate(self):
+        ##oq?!
+        return
 
 def resource_mapping():
     return {
