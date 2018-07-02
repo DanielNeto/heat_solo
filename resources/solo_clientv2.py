@@ -45,16 +45,15 @@ class SoloClient:
         else:
             return False
 
-    def removeVNet(self, networkId):
-        vNetName = self.getVNetName(networkId)
-        if vNetName is not None:
-            response = requests.delete(self.url_delete_vnet+vNetName, auth=self.authentication)
+    def removeVNet(self, networkName):
+        if networkName is not None:
+            response = requests.delete(self.url_delete_vnet+networkName, auth=self.authentication)
             if (response.status_code == HTTP_NO_CONTENT):
                 return True
             else:
                 return False
 
-    def inspectVNet(self, networkId):
+    def inspectVNet(self, networkName):
         response = requests.get(self.url_get_backup, auth=self.authentication)
         if (response.status_code != HTTP_OK):
             #error
@@ -63,7 +62,7 @@ class SoloClient:
         vnets = json.loads(response.text)
         
         for vnet in vnets["vNets"]:
-            if (vnet["vNetworkId"] == networkId):
+            if (vnet["vNetworkName"] == networkName):
                 for vswitch in vnet["vSwitches"]:
                     if (vswitch["status"] != "CREATED"):
                         return False

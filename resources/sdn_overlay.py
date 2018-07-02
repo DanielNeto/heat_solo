@@ -100,18 +100,14 @@ class SDNOverlay(resource.Resource):
         if (networkName is False) or (networkName is None):
             #throw exception
             return False
-        
-        networkId = client.getVNetId(networkName)
-        if (networkId is None):
-            return False
 
-        self.resource_id_set(networkId)
-        return networkId
+        self.resource_id_set(networkName)
+        return networkName
 
-    def check_create_complete(self, networkId):
+    def check_create_complete(self, networkName):
 
         client = self.getClient()
-        return client.inspectVNet(networkId)
+        return client.inspectVNet(networkName)
 
     def handle_delete(self):
 
@@ -127,7 +123,7 @@ class SDNOverlay(resource.Resource):
 
         return self.resource_id
 
-    def check_delete_complete(self, networkId):
+    def check_delete_complete(self, networkName):
 
         client = self.getClient()
         return (client.getVNetName() is None)
