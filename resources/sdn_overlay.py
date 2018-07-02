@@ -74,6 +74,11 @@ class SDNOverlay(resource.Resource):
             _('The REST API IP address and TCP port used to send requests '
               'to the SDNOverlay service.'
               'Ex.: http://172.25.0.2:8181')
+        ),
+        NETWORK_NAME: properties.Schema(
+            properties.Schema.STRING,
+            _('The Virtual Network name.'
+              'Ex.: vnet')
         )
     }
 
@@ -87,13 +92,17 @@ class SDNOverlay(resource.Resource):
         
         client = self.getClient()
         
-        vnets = JsonVNet("vnet5")
-        vnets.addVSwitch("1000000000000011", "192.168.1.1", "6633", "OF_13", "whx-rj")
-        vnets.addVSwitch("2000000000000022", "192.168.1.1", "6633", "OF_13", "whx-sp")
-        networkId = client.createVNet(vnets.getJson())
+        vnets = JsonVNet(self.properties[self.NETWORK_NAME])
+        #vnets.addVSwitch("1000000000000011", "192.168.1.1", "6633", "OF_13", "whx-rj")
+        #vnets.addVSwitch("2000000000000022", "192.168.1.1", "6633", "OF_13", "whx-sp")
+        networkName = client.createVNet(vnets.getJson())
 
-        if (networkId is False) or (networkId is None):
+        if (networkName is False) or (networkName is None):
             #throw exception
+            return False
+        
+        networkId = client.getVNetId(networkName)
+        if (networkId is None):
             return False
 
         self.resource_id_set(networkId)
