@@ -1,0 +1,30 @@
+heat_template_version: 2018-03-02
+
+description: >
+  Simple template to deploy a SDNOverlayOrchestrator 
+  vnet with 1 virtual switch with 1 virtual host
+
+resources:
+  my_instance:
+    type: RNP::SOLO::VirtualNetwork
+    properties:
+      rest_address: 'http://172.25.0.2:8181'
+      rest_user: 'karaf'
+      rest_password: 'karaf'
+      network_name: 'vnet5'
+      switches:
+        - datapath: '0000000000001111'
+          controller_ip: '192.168.1.1'
+          controller_port: '6633'
+          openflow_version: 'OF_13'
+          physical_device: 'whx-rj'
+      hosts:
+        - hostname: 'vhost1'
+          endpoint_name: 'Docker Host RJ'
+          template_name: 'SSH HOST'
+          datapath: '0000000000001111'
+          virtual_port_number: '1'
+          vlan: '200'
+          dataplane_ip: '10.10.10.10'
+          dataplane_subnet: '10.10.10.0/24'
+          dataplane_gateway: '10.10.10.254'

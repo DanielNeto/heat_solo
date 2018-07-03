@@ -1,0 +1,25 @@
+heat_template_version: 2018-03-02
+
+description: >
+  Simple template to deploy a SDNOverlayOrchestrator 
+  vnet with 2 virtual switches
+
+resources:
+  my_instance:
+    type: RNP::SOLO::VirtualNetwork
+    properties:
+      rest_address: 'http://172.25.0.2:8181'
+      rest_user: 'karaf'
+      rest_password: 'karaf'
+      network_name: 'vnet2'
+      switches:
+        - datapath: '0000000000000001'
+          controller_ip: '192.168.1.1'
+          controller_port: '6633'
+          openflow_version: 'OF_13'
+          physical_device: 'whx-rj'
+        - datapath: '0000000000000002'
+          controller_ip: '192.168.1.1'
+          controller_port: '6633'
+          openflow_version: 'OF_13'
+          physical_device: 'whx-sp'

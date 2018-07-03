@@ -65,7 +65,7 @@ class SDNOverlay(resource.Resource):
         VLAN, DATAPLANE_IP, DATAPLANE_SUBNET, DATAPLANE_GATEWAY
     ) = (
         'hostname', 'endpoint_name', 'template_name', 'datapath', 'virtual_port_number',  
-        'vlan', 'DATAPLANE_IP', 'dataplane_subnet', 'dataplane_gateway'
+        'vlan', 'dataplane_ip', 'dataplane_subnet', 'dataplane_gateway'
     )
 
     _vswitch_schema = {

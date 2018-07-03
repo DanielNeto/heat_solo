@@ -1,0 +1,49 @@
+heat_template_version: 2018-03-02
+
+description: >
+  Simple template to deploy a SDNOverlayOrchestrator 
+  vnet with 2 vswitches with 3 virtual links
+
+resources:
+  my_instance:
+    type: RNP::SOLO::VirtualNetwork
+    properties:
+      rest_address: 'http://172.25.0.2:8181'
+      rest_user: 'karaf'
+      rest_password: 'karaf'
+      network_name: 'vnet4'
+      switches:
+        - datapath: '0000000000000111'
+          controller_ip: '192.168.1.1'
+          controller_port: '6633'
+          openflow_version: 'OF_13'
+          physical_device: 'whx-rj'
+        - datapath: '0000000000000222'
+          controller_ip: '192.168.1.1'
+          controller_port: '6633'
+          openflow_version: 'OF_13'
+          physical_device: 'whx-sp'
+      links:
+        - datapath_src: '0000000000000111'
+          datapath_dst: '0000000000000222'
+          virtual_port_number_src: '1'
+          virtual_port_number_dst: '1'
+          physical_port_name_src: 'backbone-rnp'
+          physical_port_name_dst: 'backbone-rnp'
+          link_type: 'STATIC_VLAN'
+          vlan: '100'
+        - datapath_src: '0000000000000111'
+          datapath_dst: '0000000000000222'
+          virtual_port_number_src: '2'
+          virtual_port_number_dst: '2'
+          physical_port_name_src: 'backbone-rnp'
+          physical_port_name_dst: 'backbone-rnp'
+          link_type: 'NSI'
+          nsi_bandwidth: '200'
+        - datapath_src: '0000000000000111'
+          datapath_dst: '0000000000000222'
+          virtual_port_number_src: '3'
+          virtual_port_number_dst: '3'
+          physical_port_name_src: 'backbone-rnp'
+          physical_port_name_dst: 'backbone-rnp'
+          link_type: 'VXLAN'

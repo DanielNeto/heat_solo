@@ -1,0 +1,14 @@
+heat_template_version: 2018-03-02
+
+description: >
+  Simple template to deploy a SDNOverlayOrchestrator 
+  virtual network
+
+resources:
+  my_instance:
+    type: RNP::SOLO::VirtualNetwork
+    properties:
+      rest_address: 'http://172.25.0.2:8181'
+      rest_user: 'karaf'
+      rest_password: 'karaf'
+      network_name: 'vnet1'

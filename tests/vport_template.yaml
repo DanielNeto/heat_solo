@@ -1,0 +1,35 @@
+heat_template_version: 2018-03-02
+
+description: >
+  Simple template to deploy a SDNOverlayOrchestrator 
+  vnet with 2 vswitches each with a virtual port
+
+resources:
+  my_instance:
+    type: RNP::SOLO::VirtualNetwork
+    properties:
+      rest_address: 'http://172.25.0.2:8181'
+      rest_user: 'karaf'
+      rest_password: 'karaf'
+      network_name: 'vnet3'
+      switches:
+        - datapath: '0000000000000011'
+          controller_ip: '192.168.1.1'
+          controller_port: '6633'
+          openflow_version: 'OF_13'
+          physical_device: 'whx-rj'
+        - datapath: '0000000000000022'
+          controller_ip: '192.168.1.1'
+          controller_port: '6633'
+          openflow_version: 'OF_13'
+          physical_device: 'whx-sp'
+      ports:
+        - datapath: '0000000000000011'
+          virtual_port_number: '1'
+          physical_port_name: 'backbone-rnp'
+          binding_type: 'VLAN'
+          vlan: '11'
+        - datapath: '0000000000000022'
+          virtual_port_number: '1'
+          physical_port_name: 'backbone-rnp'
+          binding_type: 'PASSTHROUGH'
