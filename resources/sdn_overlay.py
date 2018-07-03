@@ -96,6 +96,33 @@ class SDNOverlay(resource.Resource):
         )
     }
 
+    _vport_schema = {
+        DATAPATH: properties.Schema(
+            properties.Schema.STRING,
+            _('Openflow datapath ID of the virtual switch.'),
+            required=True,
+        ),
+        VIRTUAL_PORT_NUMBER: properties.Schema(
+            properties.Schema.STRING,
+            _('Openflow virtual port number.'),
+            required=True,
+        ),
+        PHYSICAL_PORT_NAME: properties.Schema(
+            properties.Schema.STRING,
+            _('Physical port name.'),
+            required=True,
+        ),
+        BINDING_TYPE: properties.Schema(
+            properties.Schema.STRING,
+            _('Binding type between virtual and physical ports.'),
+            required=True,
+        ),
+        VLAN: properties.Schema(
+            properties.Schema.STRING,
+            _('VLAN identifier for VLAN binding type.')
+        )
+    }
+
     properties_schema = {
         REST_ADDRESS: properties.Schema(
             properties.Schema.STRING,
@@ -116,6 +143,15 @@ class SDNOverlay(resource.Resource):
                 schema=_vswitch_schema,
             ),
             update_allowed=True,
+        ),
+        PORTS: properties.Schema(
+            properties.Schema.LIST,
+            _('List with 0 or more map elements containing virtual port details.'),
+            schema=properties.Schema(
+                properties.Schema.MAP,
+                schema=_vport_schema,
+            ),
+            update_allowed=True,
         )
     }
 
@@ -133,6 +169,9 @@ class SDNOverlay(resource.Resource):
 
         vswitches = self.properties[self.SWITCHES] or []
         self._addVSwitches(vnets, vswitches)
+
+        vports = self.properties[self.PORTS] or []
+        self._addVPorts(vnets, vports)
 
         networkName = client.createVNet(vnets.getJson())
 
@@ -176,6 +215,15 @@ class SDNOverlay(resource.Resource):
             of_version = vswitch[self.OPENFLOW_VERSION]
             phy_device = vswitch[self.PHYSICAL_DEVICE]
             vnets.addVSwitch(datapath, controller_ip, controller_port, of_version, phy_device)
+
+    def _addVPorts(self, vnets, vports):
+        for vport in vports:
+            datapath = vport[self.DATAPATH]
+            vport_number = vport[self.VIRTUAL_PORT_NUMBER]
+            pport_name = vport[self.PHYSICAL_PORT_NAME]
+            binding = vport[self.BINDING_TYPE]
+            vlan = vport[self.VLAN] or None
+            vnets.addVPort(datapath, vport_number, pport_name, binding, vlan)
 
 def resource_mapping():
     return {
