@@ -68,6 +68,34 @@ class SDNOverlay(resource.Resource):
         'vlan', 'DATAPLANE_IP', 'dataplane_subnet', 'dataplane_gateway'
     )
 
+    _vswitch_schema = {
+        DATAPATH: properties.Schema(
+            properties.Schema.STRING,
+            _('Openflow datapath ID of the virtual switch.'),
+            required=True,
+        ),
+        CONTROLLER_IP: properties.Schema(
+            properties.Schema.STRING,
+            _('Openflow controller IP address.'),
+            required=True,
+        ),
+        CONTROLLER_PORT: properties.Schema(
+            properties.Schema.STRING,
+            _('Openflow controller TCP port.'),
+            required=True,
+        ),
+        OPENFLOW_VERSION: properties.Schema(
+            properties.Schema.STRING,
+            _('Openflow version.'),
+            required=True,
+        ),
+        PHYSICAL_DEVICE: properties.Schema(
+            properties.Schema.STRING,
+            _('Physical device name.'),
+            required=True,
+        )
+    }
+
     properties_schema = {
         REST_ADDRESS: properties.Schema(
             properties.Schema.STRING,
@@ -79,6 +107,15 @@ class SDNOverlay(resource.Resource):
             properties.Schema.STRING,
             _('The Virtual Network name.'
               'Ex.: vnet')
+        ),
+        SWITCHES: properties.Schema(
+            properties.Schema.LIST,
+            _('List with 0 or more map elements containing virtual switch details.'),
+            schema=properties.Schema(
+                properties.Schema.MAP,
+                schema=_vswitch_schema,
+            ),
+            update_allowed=True,
         )
     }
 
@@ -93,8 +130,10 @@ class SDNOverlay(resource.Resource):
         client = self.getClient()
         
         vnets = JsonVNet(self.properties[self.NETWORK_NAME])
-        #vnets.addVSwitch("1000000000000011", "192.168.1.1", "6633", "OF_13", "whx-rj")
-        #vnets.addVSwitch("2000000000000022", "192.168.1.1", "6633", "OF_13", "whx-sp")
+
+        vswitches = self.properties[self.SWITCHES] or []
+        self._addVSwitches(vnets, vswitches)
+
         networkName = client.createVNet(vnets.getJson())
 
         if (networkName is False) or (networkName is None):
@@ -128,9 +167,15 @@ class SDNOverlay(resource.Resource):
         client = self.getClient()
         return (client.getVNetName() is None)
 
-    def validate(self):
-        ##oq?!
-        return
+    def _addVSwitches(self, vnets, vswitches):
+        #iterate over a list of maps
+        for vswitch in vswitches:
+            datapath = vswitch[self.DATAPATH]
+            controller_ip = vswitch[self.CONTROLLER_IP]
+            controller_port = vswitch[self.CONTROLLER_PORT]
+            of_version = vswitch[self.OPENFLOW_VERSION]
+            phy_device = vswitch[self.PHYSICAL_DEVICE]
+            vnets.addVSwitch(datapath, controller_ip, controller_port, of_version, phy_device)
 
 def resource_mapping():
     return {
