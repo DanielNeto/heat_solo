@@ -20,8 +20,8 @@ from requests.status_codes import codes
 HTTP_OK = codes.ok                        #200
 HTTP_ACCEPTED = codes.accepted            #202
 HTTP_NO_CONTENT = codes.no_content        #204
-HTTP_BAD_REQUEST = codes.bad_request    #400
-HTTP_NOT_FOUND = codes.not_found        #404
+HTTP_BAD_REQUEST = codes.bad_request      #400
+HTTP_NOT_FOUND = codes.not_found          #404
 HTTP_SERVER_ERROR = codes.server_error    #500
 
 ENDPOINT="http://172.25.0.2:8181"
@@ -41,7 +41,7 @@ class SoloClient:
     def createVNet(self, jsonVnet):
         response = requests.post(self.url_post_vnet, data=json.dumps(jsonVnet), auth=self.authentication)
         if (response.status_code == HTTP_ACCEPTED):
-            return self.getVNetId(jsonVnet["vNets"][0]["vNetworkName"])
+            return jsonVnet["vNets"][0]["vNetworkName"]
         else:
             return False
 
