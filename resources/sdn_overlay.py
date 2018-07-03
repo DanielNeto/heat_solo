@@ -334,7 +334,7 @@ class SDNOverlay(resource.Resource):
     def check_delete_complete(self, networkName):
 
         client = self.getClient()
-        return (client.getVNetName() is None)
+        return (client.getVNetName(networkName) is None)
 
     def _addVSwitches(self, vnets, vswitches):
         #iterate over a list of maps
