@@ -306,8 +306,8 @@ class SDNOverlay(resource.Resource):
         networkName = client.createVNet(vnets.getJson())
 
         if (networkName is False) or (networkName is None):
-            #throw exception
-            return False
+            raise exception.ResourceInError(resource_status=self.FAILED,
+                                            status_reason="REST server error")
 
         self.resource_id_set(networkName)
         return networkName
@@ -326,8 +326,7 @@ class SDNOverlay(resource.Resource):
         ok = client.removeVNet(self.resource_id)
 
         if not ok:
-            #throw error
-            return False
+            raise exception.Error("REST server error")
 
         return self.resource_id
 

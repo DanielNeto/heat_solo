@@ -35,15 +35,17 @@ class SoloClient:
         self.url_post_vnet = endpoint + "/overlay/orchestrator/v1/vnet"
         self.url_get_vnets = endpoint + "/overlay/orchestrator/v1/vnet"
         self.url_get_vnet = endpoint + "/overlay/orchestrator/v1/vnet/network/"
+        self.url_get_state = endpoint + "overlay/orchestrator/v1/vnet/state/network/"
         self.url_get_backup = endpoint + "/overlay/orchestrator/v1/vnet/backup"
         self.url_delete_vnet = endpoint + "/overlay/orchestrator/v1/vnet/network/"
 
     def createVNet(self, jsonVnet):
-        response = requests.post(self.url_post_vnet, data=json.dumps(jsonVnet), auth=self.authentication)
-        if (response.status_code == HTTP_ACCEPTED):
-            return jsonVnet["vNets"][0]["vNetworkName"]
-        else:
-            return False
+    	if jsonVnet is not None:
+            response = requests.post(self.url_post_vnet, data=json.dumps(jsonVnet), auth=self.authentication)
+            if (response.status_code == HTTP_ACCEPTED):
+                return jsonVnet["vNets"][0]["vNetworkName"]
+            else:
+                return False
 
     def removeVNet(self, networkName):
         if networkName is not None:
@@ -54,32 +56,18 @@ class SoloClient:
                 return False
 
     def inspectVNet(self, networkName):
-        response = requests.get(self.url_get_backup, auth=self.authentication)
-        if (response.status_code != HTTP_OK):
-            #error
-            return False
-        
-        vnets = json.loads(response.text)
-        
-        for vnet in vnets["vNets"]:
-            if (vnet["vNetworkName"] == networkName):
-                for vswitch in vnet["vSwitches"]:
-                    if (vswitch["status"] != "CREATED"):
-                        return False
-                for vport in vnet["vPorts"]:
-                    if (vport["status"] != "CREATED"):
-                        return False
-                for vlink in vnet["vLinks"]:
-                    if (vlink["status"] != "CREATED"):
-                        return False
-                for vhost in vnet["vHosts"]:
-                    if (vhost["status"] != "CREATED"):
-                        return False
-                ##all good
-                return True
+        response = requests.get(self.url_get_state+networkName, auth=self.authentication)
+        if (response.status_code == HTTP_SERVER_ERROR):
+            raise RuntimeError("Error getting a response from the REST server")
+        if (response.status_code == HTTP_NOT_FOUND):
+        	return False
+      
+        state = json.loads(response.text)
 
-        ##nao achou deu ruim
-        return False
+        if (state["State"] == "CREATED"):
+            return True
+        else:
+            return False
 
     def _getVnets(self):
         response = requests.get(self.url_get_vnets, auth=self.authentication)
