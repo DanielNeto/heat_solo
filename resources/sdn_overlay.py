@@ -24,7 +24,7 @@ from heat.engine import support
 
 LOG = logging.getLogger(__name__)
 
-from solo_clientv2 import SoloClient, JsonVNet
+from solo_client import SoloClient, JsonVNet
 
 class SDNOverlay(resource.Resource):
 
