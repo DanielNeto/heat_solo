@@ -222,24 +222,28 @@ class SDNOverlay(resource.Resource):
             properties.Schema.STRING,
             _('The REST API IP address and TCP port used to send requests '
               'to the SDNOverlay service.'
-              'Ex.: http://172.25.0.2:8181')
+              'Ex.: http://172.25.0.2:8181'),
+            required=True
         ),
         REST_USER: properties.Schema(
             properties.Schema.STRING,
             _('The REST API user used to send requests '
               'to the SDNOverlay service.'
-              'Ex.: karaf')
+              'Ex.: karaf'),
+            default='karaf'
         ),
         REST_PASSWORD: properties.Schema(
             properties.Schema.STRING,
             _('The REST API password used to send requests '
               'to the SDNOverlay service.'
-              'Ex.: karaf')
+              'Ex.: karaf'),
+            default='karaf'
         ),
         NETWORK_NAME: properties.Schema(
             properties.Schema.STRING,
             _('The Virtual Network name.'
-              'Ex.: vnet')
+              'Ex.: vnet'),
+            required=True
         ),
         SWITCHES: properties.Schema(
             properties.Schema.LIST,

@@ -35,7 +35,7 @@ class SoloClient:
         self.url_post_vnet = endpoint + "/overlay/orchestrator/v1/vnet"
         self.url_get_vnets = endpoint + "/overlay/orchestrator/v1/vnet"
         self.url_get_vnet = endpoint + "/overlay/orchestrator/v1/vnet/network/"
-        self.url_get_state = endpoint + "overlay/orchestrator/v1/vnet/state/network/"
+        self.url_get_state = endpoint + "/overlay/orchestrator/v1/vnet/state/network/"
         self.url_get_backup = endpoint + "/overlay/orchestrator/v1/vnet/backup"
         self.url_delete_vnet = endpoint + "/overlay/orchestrator/v1/vnet/network/"
 
